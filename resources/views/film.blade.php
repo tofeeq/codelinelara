@@ -64,8 +64,28 @@
 			            </div> 
 			            <p></p> 
 			            <!-- /.col-lg-6 -->
-
-			    		 
+			             <!-- Comment form -->
+			    		 @if (Auth::guest())
+				    		<!-- any thing for guests -->
+				    	@else
+				    		<h3>Comments</h3>
+					    	<div class="col-md-12 form">
+					    		{{ Form::open(['route' => ['films.comment', $film->id], 'class' => 'form-horizontal' , "id" => "films-comment"]) }}
+					    		<div class="form-group">
+								    {{ Form::label('name', 'Name', ["class" => "control-label"]) }}
+								    {{ Form::text('name', '', ["class" => "form-control",  "required" ]) }}
+								</div>
+								<div class="form-group">
+								    {{ Form::label('comments', 'Comments', ["class" => "control-label"]) }}
+								    {{ Form::textarea('comments', '', ["class" => "form-control", "rows" => "5", "required"]) }}
+								</div>
+								<div class="form-group">
+									{{ Form::submit('Comment', ['class' => 'btn btn-primary']) }}
+								</div>
+								{!! Form::close() !!}
+				    		</div>
+				    		<div id="form-msg"></div>
+				    	@endif
 
 				    	</div>
 					</div>

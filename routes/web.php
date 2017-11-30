@@ -26,6 +26,9 @@ Route::post('films/create', 'FilmController@storeform')->name('films.store');
 Route::get('/films', 'FilmController@home');
 Route::get('films/{slug}', 'FilmController@single');
 
+Route::post('films/comment/{id}', 'CommentController@store')
+	->name('films.comment');
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
