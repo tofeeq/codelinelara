@@ -4,21 +4,63 @@ namespace App\Http\Controllers;
 
 use App\Film;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Validator;
 
 use DB;
 use App\FilmGenre;
 
+use GuzzleHttp\Client;
+
 class FilmController extends Controller
 {
+    /**
+     * Display a listing of the films at home
+     *
+     * @return \Illuminate\Http\Response
+     */
+    
+    public function home( Request $request )
+    {
+        $client = new Client([
+            // Base URI is used with relative requests
+            'base_uri' => env('APP_URL') . '/api/',
+            // You can set any number of default request options.
+            'timeout'  => 5.0,
+        ]);
+
+        try {
+            $response = $client->request('GET', 'film', [
+                "json" => ["page" => $request->get("page")]
+            ]);
+
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            die();
+        }
+
+        
+        if ($response->getStatusCode() == 200) {
+            $body = $response->getBody();
+            $json = $body->getContents();
+        
+        } else {
+            throw new Exception($response->getReasonPhrase());               
+        }
+        
+        return view('films', ['paginator' => json_decode($json)]);
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        echo "inside index ";
+        //You may also convert a paginator instance to JSON by simply returning it from a route or controller action:
+        $film = new Film();
+        return $film->listing();
     }
 
     /**
