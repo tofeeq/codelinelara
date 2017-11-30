@@ -11,21 +11,21 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 //redirecting / to /films
 Route::get('/', function () {
     return redirect('films');
 });
 
+//create films
+Route::get('films/create', 'FilmController@create')->name('films-create');
+Route::post('films/create', 'FilmController@storeform')->name('films.store');
+
+
 //get films to show on home page
 Route::get('/films', 'FilmController@home');
+Route::get('films/{slug}', 'FilmController@single');
 
-//create films
-Route::get('films/create', 'Film@create')->name('films-create');
-Route::post('films/create', 'Film@store')->name('films.store');
-
-//define routes related to login/logout user
 Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

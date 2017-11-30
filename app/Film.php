@@ -41,4 +41,24 @@ class Film extends Model
         return $films;
     }
 
+    //find a single film 
+
+    public function find($key, $val) {
+
+        $film = 
+            $this->where($key, $val)->get()->first();
+
+        $film->photo = env('APP_URL') . Storage::url($film->photo);
+
+        $genres = DB::table("film_genres")
+            ->where("film_id", $film->id)
+            ->get(["id", "genre"])
+             ;
+        if (!empty($genres)) {
+            $film->genres = $genres;
+        }   
+        
+
+        return $film;
+    }
 }

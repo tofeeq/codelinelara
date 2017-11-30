@@ -51,6 +51,19 @@ class FilmController extends Controller
         return view('films', ['paginator' => json_decode($json)]);
     }
 
+    //web route sinfle film detail page
+    public function single(Request $request, $slug)
+    {
+        $modelFilm = new Film();
+        $film = $modelFilm->find("slug", $slug);
+
+        return view('film', ['film' => $film]);
+    }
+
+    /***********************************************************************
+    /*                     API ROUTES CALLS
+    /***********************************************************************
+    
     /**
      * Display a listing of the resource.
      *
