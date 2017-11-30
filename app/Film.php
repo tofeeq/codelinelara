@@ -28,7 +28,7 @@ class Film extends Model
         $films = $this->paginate(1);
 
         foreach ($films as &$film) {
-            $film['photo'] = env('APP_URL') . Storage::url($film['photo']);
+            $film['photo'] = str_replace("/public", "", env('APP_URL')) . Storage::url($film->photo);
             $genres = DB::table("film_genres")
                 ->where("film_id", $film->id)
                 ->get(["id", "genre"])
@@ -48,7 +48,7 @@ class Film extends Model
         $film = 
             $this->where($key, $val)->get()->first();
 
-        $film->photo = env('APP_URL') . Storage::url($film->photo);
+        $film->photo = str_replace("/public", "", env('APP_URL')) . Storage::url($film->photo);
 
         $genres = DB::table("film_genres")
             ->where("film_id", $film->id)

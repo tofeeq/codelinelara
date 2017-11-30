@@ -60,10 +60,84 @@ class FilmController extends Controller
         return view('film', ['film' => $film]);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $modelFilm = new Film();
+        return view('filmform', ["modelFilm" => $modelFilm]);
+    }
+
+
+    /**
+     * Store a film coming from front end form, it is different as involves file upload
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeform(Request $request)
+    {
+         
+        $film = new Film();
+        $data = $this->getRequestData($request);
+
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'release_date' => 'required|date',
+            'ticket_price' => 'required|numeric',
+            'country' => 'required|string',
+            'photo' => 'required|file',
+            'rating' => 'required|numeric|max:5',
+            'genre' => 'required',
+        ]);
+
+         
+        //creating slug
+        $data['slug'] = str_slug($data['name'], "-"); 
+
+
+        if ($request->file('photo')->isValid()) {
+            $path = $request->photo->store('images');
+            $data['photo'] = $path;
+        }
+        try {
+            $film->create($data);
+        } catch (QueryException $e) {
+            if ($e->getCode() == '23000') {
+                $msg = '["Film name already exists"]';
+            } else {
+                $msg = '["' . $e->getMessage() . '"]';
+            }
+            return response(
+                $msg, 400
+            )->header('Content-Type', 'application/json');
+        }
+
+        $filmId = DB::getPdo()->lastInsertId();
+
+        $genreModel = new FilmGenre();
+        $genres = explode(",", $request->get('genre'));
+        foreach ($genres as $genre) {
+            $genreModel->create([
+                "film_id" => $filmId,
+                "genre" => $genre
+            ]);
+        }
+        
+        return redirect()->route("films-create")
+            ->with('message','Film was successfully created!');
+            ; 
+        
+    }
     /***********************************************************************
     /*                     API ROUTES CALLS
     /***********************************************************************
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -76,15 +150,7 @@ class FilmController extends Controller
         return $film->listing();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-         
-    }
+     
 
     /**
      * Validator rules for validating form data
