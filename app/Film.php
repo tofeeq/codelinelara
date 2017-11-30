@@ -61,4 +61,13 @@ class Film extends Model
 
         return $film;
     }
+
+    //Relation with other models for seeders
+    public function comments() {
+        return $this->hasMany('App\FilmComment');
+    }
+
+    public function genres() {
+        return $this->hasMany('App\FilmGenre');
+    }
 }
